@@ -63,11 +63,9 @@ function createWindow() {
         // UI Injection
         // -------------------------------------------------------
         mainWindow.webContents.executeJavaScript(`
-            window.addEventListener("message", (event) => {
-                if (event.data && event.data.prismUpdateStatus) {
-                    const el = document.getElementById("prism-update-status");
-                    if (el) el.textContent = event.data.prismUpdateStatus;
-                }
+            window.electronAPI.onUpdateStatus((msg) => {
+                const el = document.getElementById("prism-update-status");
+                if (el) el.textContent = msg;
             });
 
             if (!document.getElementById("prism-panel")) {

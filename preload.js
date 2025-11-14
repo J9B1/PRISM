@@ -5,6 +5,6 @@ contextBridge.exposeInMainWorld("electronAPI", {
 
     onUpdateStatus: (callback) =>
         ipcRenderer.on("update-status", (event, msg) => {
-            window.postMessage({ prismUpdateStatus: msg });
+            callback(msg);
         })
 });
