@@ -6,7 +6,7 @@
 <p align="center"><strong>An enhanced standalone client for Legend of Mushroom.</strong></p>
 
 <p align="center">
-  <a href="https://github.com/J9B1/PRISM/releases/download/v1.1.0/PRISM.Setup.1.1.0.exe">
+  <a href="https://github.com/J9B1/PRISM/releases/download/v1.1.1/PRISM.Setup.1.1.1.exe">
     <img src="https://img.shields.io/badge/Download-Windows%20Installer-blue?style=for-the-badge" />
   </a>
 </p>
@@ -56,7 +56,7 @@ PRISM now includes a full Windows installer with automatic update support.
 
 ### **1. Download the latest installer**
 
-👉 **[Download PRISM Setup](https://github.com/J9B1/PRISM/releases/download/v1.1.0/PRISM.Setup.1.1.0.exe)**
+👉 **[Download PRISM Setup](https://github.com/J9B1/PRISM/releases/download/v1.1.1/PRISM.Setup.1.1.1.exe)**
 
 ### **2. Run the installer**
 - Choose your install location  
@@ -108,7 +108,7 @@ Just install once — PRISM handles the rest.
 
 ## 📘 Patch Notes
 
-### **v1.1.0 — Installer + Auto-Updater Release**
+### **v1.1.1 — Installer + Auto-Updater Release**
 - Added full NSIS installer  
 - Automatic updates enabled  
 - GitHub release/publish integration  

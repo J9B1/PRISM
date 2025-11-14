@@ -20,11 +20,6 @@ app.commandLine.appendSwitch("disable-background-timer-throttling");
 app.commandLine.appendSwitch("disable-backgrounding-occluded-windows");
 app.commandLine.appendSwitch("disable-features", "CalculateNativeWinOcclusion");
 
-app.once("ready", () => {
-    app.setPath("userData", path.join(__dirname, "prism-data"));
-    autoUpdater.checkForUpdatesAndNotify();
-});
-
 // -------------------------------------------------------
 // IPC Handlers
 // -------------------------------------------------------
