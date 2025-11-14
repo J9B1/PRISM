@@ -1,7 +1,7 @@
 {
   "name": "prism",
   "productName": "PRISM",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "PRISM Game Wrapper",
   "main": "app.js",
   "author": "Jake",
@@ -52,7 +52,7 @@
       "oneClick": false,
       "perMachine": false,
       "allowToChangeInstallationDirectory": true,
-      "artifactName": "PRISM Setup ${version}.exe"
+      "artifactName": "PRISM-Setup-${version}.exe"
     }
   }
 }

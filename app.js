@@ -7,9 +7,6 @@ let mainWindow = null;
 
 app.setName("PRISM");
 
-// -------------------------------------------------------
-// PRISM — Electron Updater
-// -------------------------------------------------------
 const { autoUpdater } = require("electron-updater");
 
 // -------------------------------------------------------
@@ -21,14 +18,14 @@ app.commandLine.appendSwitch("disable-backgrounding-occluded-windows");
 app.commandLine.appendSwitch("disable-features", "CalculateNativeWinOcclusion");
 
 // -------------------------------------------------------
-// IPC Handlers
+// IPC
 // -------------------------------------------------------
 ipcMain.on("setAlwaysOnTop", (event, state) => {
     if (mainWindow) mainWindow.setAlwaysOnTop(state);
 });
 
 // -------------------------------------------------------
-// PRISM Window Settings
+// Window Setup
 // -------------------------------------------------------
 const GAME_URL = "https://lom.joynetgame.com/";
 const ASPECT = 0.5619;
@@ -59,63 +56,20 @@ function createWindow() {
 
     mainWindow.loadURL(GAME_URL);
 
-    // -------------------------------------------------------
-    // PRISM UI Injection
-    // -------------------------------------------------------
     mainWindow.webContents.on("did-finish-load", () => {
+        const prismVersion = app.getVersion();
+
+        // -------------------------------------------------------
+        // UI Injection
+        // -------------------------------------------------------
         mainWindow.webContents.executeJavaScript(`
-            // Loading Screen
-            if (!document.getElementById("prism-loading")) {
-                const load = document.createElement("div");
-                load.id = "prism-loading";
-                load.innerHTML = \`
-                    <div id="prism-loading-box">
-                        <div id="prism-loading-title">PRISM Loading...</div>
-                        <div id="prism-loading-bar"></div>
-                    </div>
-                \`;
-                document.body.appendChild(load);
-            }
-
-            const hideLoader = () => {
-                const loader = document.getElementById("prism-loading");
-                if (loader) loader.style.opacity = "0";
-                setTimeout(() => loader && loader.remove(), 300);
-            };
-
-            const waitForGame = setInterval(() => {
-                if (document.getElementById("GameDiv")) {
-                    clearInterval(waitForGame);
-                    hideLoader();
+            window.addEventListener("message", (event) => {
+                if (event.data && event.data.prismUpdateStatus) {
+                    const el = document.getElementById("prism-update-status");
+                    if (el) el.textContent = event.data.prismUpdateStatus;
                 }
-            }, 200);
+            });
 
-            setTimeout(hideLoader, 3000);
-
-            // Pin Button (default = NOT pinned → shows 📌)
-            if (!document.getElementById("prism-pin")) {
-                const pin = document.createElement("button");
-                pin.id = "prism-pin";
-
-                const pinned = localStorage.getItem("prismPinned") === "true";
-                pin.innerHTML = pinned ? "📍" : "📌";
-                document.body.appendChild(pin);
-
-                pin.addEventListener("click", () => {
-                    const newState = !(localStorage.getItem("prismPinned") === "true");
-                    localStorage.setItem("prismPinned", newState);
-
-                    pin.innerHTML = newState ? "📍" : "📌";
-
-                    window.electronAPI.setAlwaysOnTop(newState);
-                });
-
-                if (pinned) {
-                    window.electronAPI.setAlwaysOnTop(true);
-                }
-            }
-
-            // HUD Container
             if (!document.getElementById("prism-panel")) {
                 const panel = document.createElement("div");
                 panel.id = "prism-panel";
@@ -143,17 +97,39 @@ function createWindow() {
                 hours = hours % 12;
                 hours = hours ? hours : 12;
 
-                document.getElementById("prism-hud").innerHTML =
-                    "Day " + day + "<br>" +
-                    hours + ":" + minutes + ":" + seconds + " " + ampm;
+                document.getElementById("prism-hud").innerHTML = \`
+                    Day \${day}<br>
+                    \${hours}:\${minutes}:\${seconds} \${ampm}
+                    <div id="prism-version">PRISM v${prismVersion}</div>
+                    <div id="prism-update-status"></div>
+                \`;
             }
 
             setInterval(updateHUD, 1000);
             updateHUD();
+
+            if (!document.getElementById("prism-pin")) {
+                const pin = document.createElement("button");
+                pin.id = "prism-pin";
+
+                const pinned = localStorage.getItem("prismPinned") === "true";
+                pin.innerHTML = pinned ? "📍" : "📌";
+                document.body.appendChild(pin);
+
+                pin.addEventListener("click", () => {
+                    const newState = !(localStorage.getItem("prismPinned") === "true");
+                    localStorage.setItem("prismPinned", newState);
+
+                    pin.innerHTML = newState ? "📍" : "📌";
+                    window.electronAPI.setAlwaysOnTop(newState);
+                });
+
+                if (pinned) window.electronAPI.setAlwaysOnTop(true);
+            }
         `);
 
         // -------------------------------------------------------
-        // PRISM Styles
+        // Styles
         // -------------------------------------------------------
         mainWindow.webContents.insertCSS(`
             html, body {
@@ -171,42 +147,45 @@ function createWindow() {
                 overflow: hidden !important;
             }
 
-            #prism-loading {
+            #prism-panel {
                 position: fixed;
-                inset: 0;
-                background: #222;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                z-index: 999999999;
-                opacity: 1;
-                transition: opacity 0.3s ease;
+                top: 0;
+                right: 0;
+                width: 36%;
+                height: 6.5%;
+                background: rgba(0,0,0,0.35);
+                backdrop-filter: blur(8px);
+                border-top-right-radius: ${BORDER_RADIUS}px;
+                border-bottom-left-radius: ${BORDER_RADIUS}px;
+                z-index: 999999998 !important;
+                pointer-events: none;
             }
 
-            #prism-loading-box {
+            #prism-hud {
+                position: absolute;
+                top: 50%;
+                right: 50%;
+                transform: translate(50%, -50%);
+                width: 100%;
                 text-align: center;
-                color: white;
                 font-family: Arial, sans-serif;
-            }
-
-            #prism-loading-title {
-                font-size: 22px;
+                font-size: 14px;
                 font-weight: bold;
-                margin-bottom: 20px;
+                color: white;
+                text-shadow: 0 0 4px rgba(0,0,0,0.9);
+                pointer-events: none;
             }
 
-            #prism-loading-bar {
-                width: 250px;
-                height: 6px;
-                border-radius: 10px;
-                background: linear-gradient(90deg, red, orange, yellow, green, cyan, blue, violet, red);
-                background-size: 300%;
-                animation: prism-load 2s linear infinite;
+            #prism-version {
+                font-size: 10px;
+                opacity: 0.6;
+                margin-top: 2px;
             }
 
-            @keyframes prism-load {
-                0% { background-position: 0% }
-                100% { background-position: 300% }
+            #prism-update-status {
+                font-size: 10px;
+                opacity: 0.55;
+                margin-top: 1px;
             }
 
             #prism-pin {
@@ -229,59 +208,31 @@ function createWindow() {
             #prism-pin:hover {
                 background: rgba(255,255,255,0.15);
             }
-
-            #prism-panel {
-                position: fixed;
-                top: 0;
-                right: 0;
-                width: 36%;
-                height: 5.5%;
-                background: rgba(0,0,0,0.35);
-                backdrop-filter: blur(8px);
-                border-top-right-radius: ${BORDER_RADIUS}px;
-                border-bottom-left-radius: ${BORDER_RADIUS}px;
-                z-index: 999999998 !important;
-                pointer-events: none;
-            }
-
-            #prism-hud {
-                position: absolute;
-                top: 50%;
-                right: 50%;
-                transform: translate(50%, -50%);
-                text-align: center;
-                width: 100%;
-                font-family: Arial, sans-serif;
-                font-size: 14px;
-                font-weight: bold;
-                color: white;
-                text-shadow: 0 0 4px rgba(0,0,0,0.9);
-                z-index: 999999999 !important;
-                pointer-events: none;
-            }
         `);
     });
 }
 
+// -------------------------------------------------------
+// Updater
+// -------------------------------------------------------
 app.whenReady().then(() => {
-    autoUpdater.checkForUpdatesAndNotify();
-
-    autoUpdater.on("update-available", () => {
-        console.log("PRISM: Update available.");
-    });
-
-    autoUpdater.on("update-not-available", () => {
-        console.log("PRISM: Already up to date.");
-    });
-
-    autoUpdater.on("download-progress", (progressObj) => {
-        console.log("PRISM: Downloading...", Math.round(progressObj.percent) + "%");
-    });
-
-    autoUpdater.on("update-downloaded", () => {
-        console.log("PRISM: Update downloaded. Restarting...");
-        autoUpdater.quitAndInstall();
-    });
-
     createWindow();
+
+    function send(msg) {
+        if (mainWindow) {
+            mainWindow.webContents.send("update-status", msg);
+        }
+    }
+
+    autoUpdater.on("checking-for-update", () => send("Checking for updates…"));
+    autoUpdater.on("update-available", () => send("Update found"));
+    autoUpdater.on("update-not-available", () => send("Up to date"));
+    autoUpdater.on("error", () => send("Update error"));
+    autoUpdater.on("download-progress", (p) => send(`Downloading: ${Math.round(p.percent)}%`));
+    autoUpdater.on("update-downloaded", () => {
+        send("Restarting…");
+        setTimeout(() => autoUpdater.quitAndInstall(), 1200);
+    });
+
+    autoUpdater.checkForUpdatesAndNotify();
 });
