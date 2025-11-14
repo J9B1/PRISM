@@ -9,7 +9,7 @@
 
   "scripts": {
     "start": "electron .",
-    "build": "electron-builder --win portable",
+    "build": "electron-builder --win nsis",
     "dist": "electron-builder"
   },
 
@@ -44,12 +44,15 @@
     ],
 
     "win": {
-      "target": "portable",
+      "target": "nsis",
       "icon": "icon.ico"
     },
 
-    "portable": {
-      "artifactName": "PRISM-${version}.exe"
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "artifactName": "PRISM Setup ${version}.exe"
     }
   }
 }

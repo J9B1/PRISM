@@ -6,8 +6,8 @@
 <p align="center"><strong>An enhanced standalone client for Legend of Mushroom.</strong></p>
 
 <p align="center">
-  <a href="https://github.com/J9B1/PRISM/releases/latest/download/PRISM.exe">
-    <img src="https://img.shields.io/badge/Download-Windows%20EXE-blue?style=for-the-badge" />
+  <a href="https://github.com/J9B1/PRISM/releases/latest/download/PRISM%20Setup%201.1.0.exe">
+    <img src="https://img.shields.io/badge/Download-Windows%20Installer-blue?style=for-the-badge" />
   </a>
 </p>
 
@@ -15,98 +15,121 @@
 
 ## 🌈 What is PRISM?
 
-**PRISM** is an unofficial standalone **Electron-based client** for  
-**Legend of Mushroom (LoM)** designed to provide a cleaner, smoother, and more stable gameplay experience.
+**PRISM** is an unofficial standalone **Electron-based desktop client** for  
+**Legend of Mushroom (LoM)**, designed to provide a cleaner, smoother, and more stable gameplay experience.
 
-It removes browser clutter, improves scaling, prevents background throttling (anti-AFK), and includes the custom PRISM HUD overlay for key information.
+It removes browser clutter, improves scaling, prevents background throttling (anti-AFK), and includes a custom PRISM HUD overlay for key real-time information.
 
-No cheats, no automation, **just QoL improvements**.
+No cheats. No automation.  
+**Just Pure QoL.**
 
 ---
 
 ## 🚀 Features
 
-### ✔ Clean & Perfect Scaling  
-The game loads in a correctly sized frameless window with rounded corners, no browser UI, and no wasted space.
+### ✔ Clean, Perfect Scaling  
+The game loads in a beautifully sized frameless window — no browser UI, no clutter, perfect aspect ratio, and smooth rounded corners.
 
-### ✔ Anti-AFK  
+### ✔ Anti-AFK Protection  
 Background throttling is disabled at the engine level.  
-Switch windows, alt-tab, or multitask without the game freezing or pausing.
+You can alt-tab, multitask, or use other monitors and PRISM will keep LoM running smoothly.
 
-### ✔ PRISM HUD Overlay  
-A lightweight, in-client panel displaying:
+### ✔ Live PRISM HUD  
+A subtle, glass-styled mini-panel showing:
 
-- Server Day (auto-calculated)
-- Real-time clock (AM/PM)
-- Stylish PRISM panel with a subtle glass/RGB aesthetic
+- Current server day (auto-calculated)
+- Live clock (AM/PM)
+- Minimal, crisp UI that blends into gameplay
 
-### ✔ Rounded Canvas  
-The game canvas is auto-rounded, matching the PRISM visual theme.
+### ✔ Rounded Canvas & Enhanced Rendering  
+The game canvas is rounded to match PRISM’s aesthetic and rendering stability is improved.
 
 ### ✔ Safe & Non-Intrusive  
-PRISM does **NOT** modify core game code, packets, memory, or automation.  
-It simply provides a better wrapper around the existing web version.
+PRISM does **NOT** modify game files, packets, memory, or gameplay logic.  
+It simply wraps the official LoM web client using a cleaner, prettier, more stable UI.
+
+---
+
+## 📥 Installation (Now an Installer)
+
+PRISM now includes a full Windows installer with automatic update support.
+
+### **1. Download the latest installer**
+
+👉 **[Download PRISM Setup](https://github.com/J9B1/PRISM/releases/latest/download/PRISM%20Setup%201.1.0.exe)**
+
+### **2. Run the installer**
+- Choose your install location  
+- PRISM will be added to your Start Menu  
+- Future updates will install automatically (no need to reinstall manually)
+
+### **3. Launch PRISM**
+The LoM client will open automatically.
 
 ---
 
 ## 📝 First-Time Setup (IMPORTANT)
 
-When you launch PRISM for the first time, **Legend of Mushroom loads using a guest account**.  
-This is expected, and you can switch to your real account in a few steps:
+When PRISM loads LoM for the first time, it enters as a **guest account** — this is expected.
 
-### **1. Complete the very short guest tutorial**
-- Tap the lamp  
-- Equip the gear  
-- Tap the task button  
+Follow these steps once:
 
-This takes less than a minute.
+### **1. Complete the 1-minute guest tutorial**
+- Tap lamp  
+- Equip item  
+- Tap task  
 
 ### **2. Switch to your real account**
-1. Tap your profile picture (top-left)  
-2. On the next screen, tap your profile again  
-3. Tap **“Switch Account”**  
-4. Log in with your usual method:  
+1. Tap your mushroom avatar (top-left)  
+2. Tap your avatar again  
+3. Select **“Switch Account”**  
+4. Login using:
    - Email  
    - Facebook  
    - Google  
    - Apple  
 
-PRISM will reload automatically and your main account will now be active.
+PRISM will reload and your main account will remain active next time.
 
 ---
 
-## 📥 Installation
+## 🔄 Automatic Updates
 
-1. Download PRISM here:
+PRISM now supports **auto-updating** via the official GitHub Releases feed.
 
-   👉 **[Download PRISM.exe](https://github.com/J9B1/PRISM/releases/latest/download/PRISM.exe)**
+- PRISM checks for updates on launch  
+- Downloads changes in the background  
+- Prompts to restart when ready  
+- No manual downloads required  
 
-2. Run PRISM.exe  
-   No installer required, it's fully portable.
-
-3. The client will open LoM automatically.
+Just install once — PRISM handles the rest.
 
 ---
 
 ## 📘 Patch Notes
 
-### **Version 1.0.0 — Initial Release**
-- First public version of PRISM  
-- Clean window scaling  
-- Anti-AFK engine patches  
-- PRISM HUD panel  
+### **v1.1.0 — Installer + Auto-Updater Release**
+- Added full NSIS installer  
+- Automatic updates enabled  
+- GitHub release/publish integration  
+- Improved exe structure & metadata  
+- Stability improvements
+
+### **v1.0.0 — Initial Release**
+- First PRISM build  
+- Anti-AFK  
 - Rounded canvas  
-- Improved rendering stability  
-- Project prepared for GitHub distribution and website hosting
+- HUD overlay  
+- Clean scaling + rendering tweaks  
 
 ---
 
 ## ⚠ Disclaimer
 
-PRISM is an **unofficial** client and is **not affiliated with Joynet, LoM developers, or any official partners**.
+PRISM is an **unofficial fan-made client** and is **not affiliated with Joynet or the creators of Legend of Mushroom**.
 
-PRISM provides **no cheats, no automation, and no gameplay modifications**.  
-It simply wraps the official LoM web client in a desktop application for convenience and quality of life.
+It does *not* offer cheats, macros, bots, or gameplay automation.  
+It is purely a quality-of-life wrapper around the official web client.
 
 Use at your own discretion.
 
@@ -114,9 +137,6 @@ Use at your own discretion.
 
 ## 💬 Support & Feedback
 
-Feel free to open an Issue or submit feedback.  
-New features, UI improvements, and QoL additions are planned for future versions.
-
----
+Open an Issue or share suggestions — improvements and new QoL features are planned for future versions.
 
 <p align="center">🌈 PRISM © 2025 — Enhanced LoM Client</p>
