@@ -1,20 +1,40 @@
+// -------------------------------------------------------
 // PRISM — Electron App Setup
-const { app, BrowserWindow, screen } = require("electron");
+// -------------------------------------------------------
+const { app, BrowserWindow, screen, ipcMain } = require("electron");
 const path = require("path");
+let mainWindow = null;
 
 app.setName("PRISM");
 
-// Background Behavior Tweaks
-app.commandLine.appendSwitch('disable-renderer-backgrounding');
-app.commandLine.appendSwitch('disable-background-timer-throttling');
-app.commandLine.appendSwitch('disable-backgrounding-occluded-windows');
-app.commandLine.appendSwitch('disable-features', 'CalculateNativeWinOcclusion');
+// -------------------------------------------------------
+// PRISM — Electron Updater
+// -------------------------------------------------------
+const { autoUpdater } = require("electron-updater");
+
+// -------------------------------------------------------
+// Chromium Behaviour Tweaks
+// -------------------------------------------------------
+app.commandLine.appendSwitch("disable-renderer-backgrounding");
+app.commandLine.appendSwitch("disable-background-timer-throttling");
+app.commandLine.appendSwitch("disable-backgrounding-occluded-windows");
+app.commandLine.appendSwitch("disable-features", "CalculateNativeWinOcclusion");
 
 app.once("ready", () => {
     app.setPath("userData", path.join(__dirname, "prism-data"));
+    autoUpdater.checkForUpdatesAndNotify();
 });
 
+// -------------------------------------------------------
+// IPC Handlers
+// -------------------------------------------------------
+ipcMain.on("setAlwaysOnTop", (event, state) => {
+    if (mainWindow) mainWindow.setAlwaysOnTop(state);
+});
+
+// -------------------------------------------------------
 // PRISM Window Settings
+// -------------------------------------------------------
 const GAME_URL = "https://lom.joynetgame.com/";
 const ASPECT = 0.5619;
 const SCALE = 0.95;
@@ -27,7 +47,7 @@ function createWindow() {
     const innerH = Math.round(screenH * SCALE);
     const innerW = Math.round(innerH * ASPECT);
 
-    const win = new BrowserWindow({
+    mainWindow = new BrowserWindow({
         width: innerW,
         height: innerH,
         resizable: false,
@@ -36,17 +56,71 @@ function createWindow() {
         transparent: true,
         backgroundColor: "#00000000",
         webPreferences: {
+            preload: path.join(__dirname, "preload.js"),
             nodeIntegration: false,
-            contextIsolation: false,
             backgroundThrottling: false
         }
     });
 
-    win.loadURL(GAME_URL);
+    mainWindow.loadURL(GAME_URL);
 
-    // PRISM Overlay + HUD Injection
-    win.webContents.on("did-finish-load", () => {
-        win.webContents.executeJavaScript(`
+    // -------------------------------------------------------
+    // PRISM UI Injection
+    // -------------------------------------------------------
+    mainWindow.webContents.on("did-finish-load", () => {
+        mainWindow.webContents.executeJavaScript(`
+            // Loading Screen
+            if (!document.getElementById("prism-loading")) {
+                const load = document.createElement("div");
+                load.id = "prism-loading";
+                load.innerHTML = \`
+                    <div id="prism-loading-box">
+                        <div id="prism-loading-title">PRISM Loading...</div>
+                        <div id="prism-loading-bar"></div>
+                    </div>
+                \`;
+                document.body.appendChild(load);
+            }
+
+            const hideLoader = () => {
+                const loader = document.getElementById("prism-loading");
+                if (loader) loader.style.opacity = "0";
+                setTimeout(() => loader && loader.remove(), 300);
+            };
+
+            const waitForGame = setInterval(() => {
+                if (document.getElementById("GameDiv")) {
+                    clearInterval(waitForGame);
+                    hideLoader();
+                }
+            }, 200);
+
+            setTimeout(hideLoader, 3000);
+
+            // Pin Button (default = NOT pinned → shows 📌)
+            if (!document.getElementById("prism-pin")) {
+                const pin = document.createElement("button");
+                pin.id = "prism-pin";
+
+                const pinned = localStorage.getItem("prismPinned") === "true";
+                pin.innerHTML = pinned ? "📍" : "📌";
+                document.body.appendChild(pin);
+
+                pin.addEventListener("click", () => {
+                    const newState = !(localStorage.getItem("prismPinned") === "true");
+                    localStorage.setItem("prismPinned", newState);
+
+                    pin.innerHTML = newState ? "📍" : "📌";
+
+                    window.electronAPI.setAlwaysOnTop(newState);
+                });
+
+                if (pinned) {
+                    window.electronAPI.setAlwaysOnTop(true);
+                }
+            }
+
+            // HUD Container
             if (!document.getElementById("prism-panel")) {
                 const panel = document.createElement("div");
                 panel.id = "prism-panel";
@@ -83,8 +157,10 @@ function createWindow() {
             updateHUD();
         `);
 
-        // PRISM Stylesheet Injection
-        win.webContents.insertCSS(`
+        // -------------------------------------------------------
+        // PRISM Styles
+        // -------------------------------------------------------
+        mainWindow.webContents.insertCSS(`
             html, body {
                 margin: 0 !important;
                 padding: 0 !important;
@@ -100,16 +176,73 @@ function createWindow() {
                 overflow: hidden !important;
             }
 
+            #prism-loading {
+                position: fixed;
+                inset: 0;
+                background: #222;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 999999999;
+                opacity: 1;
+                transition: opacity 0.3s ease;
+            }
+
+            #prism-loading-box {
+                text-align: center;
+                color: white;
+                font-family: Arial, sans-serif;
+            }
+
+            #prism-loading-title {
+                font-size: 22px;
+                font-weight: bold;
+                margin-bottom: 20px;
+            }
+
+            #prism-loading-bar {
+                width: 250px;
+                height: 6px;
+                border-radius: 10px;
+                background: linear-gradient(90deg, red, orange, yellow, green, cyan, blue, violet, red);
+                background-size: 300%;
+                animation: prism-load 2s linear infinite;
+            }
+
+            @keyframes prism-load {
+                0% { background-position: 0% }
+                100% { background-position: 300% }
+            }
+
+            #prism-pin {
+                position: fixed;
+                top: 0;
+                right: 0;
+                width: 40px;
+                height: 40px;
+                background: rgba(0,0,0,0.5);
+                color: white;
+                font-size: 20px;
+                border: none;
+                cursor: pointer;
+                border-top-right-radius: ${BORDER_RADIUS}px;
+                border-bottom-left-radius: ${BORDER_RADIUS}px;
+                z-index: 1000000000 !important;
+                backdrop-filter: blur(6px);
+            }
+
+            #prism-pin:hover {
+                background: rgba(255,255,255,0.15);
+            }
+
             #prism-panel {
                 position: fixed;
                 top: 0;
                 right: 0;
                 width: 36%;
                 height: 5.5%;
-                max-height: 150px;
                 background: rgba(0,0,0,0.35);
                 backdrop-filter: blur(8px);
-                -webkit-backdrop-filter: blur(8px);
                 border-top-right-radius: ${BORDER_RADIUS}px;
                 border-bottom-left-radius: ${BORDER_RADIUS}px;
                 z-index: 999999998 !important;
@@ -126,7 +259,6 @@ function createWindow() {
                 font-family: Arial, sans-serif;
                 font-size: 14px;
                 font-weight: bold;
-                line-height: 1.2;
                 color: white;
                 text-shadow: 0 0 4px rgba(0,0,0,0.9);
                 z-index: 999999999 !important;
@@ -136,4 +268,25 @@ function createWindow() {
     });
 }
 
-app.whenReady().then(createWindow);
+app.whenReady().then(() => {
+    autoUpdater.checkForUpdatesAndNotify();
+
+    autoUpdater.on("update-available", () => {
+        console.log("PRISM: Update available.");
+    });
+
+    autoUpdater.on("update-not-available", () => {
+        console.log("PRISM: Already up to date.");
+    });
+
+    autoUpdater.on("download-progress", (progressObj) => {
+        console.log("PRISM: Downloading...", Math.round(progressObj.percent) + "%");
+    });
+
+    autoUpdater.on("update-downloaded", () => {
+        console.log("PRISM: Update downloaded. Restarting...");
+        autoUpdater.quitAndInstall();
+    });
+
+    createWindow();
+});

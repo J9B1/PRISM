@@ -1,17 +1,21 @@
 {
   "name": "prism",
   "productName": "PRISM",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "PRISM Game Wrapper",
   "main": "app.js",
+  "author": "Jake",
+  "license": "ISC",
 
   "scripts": {
     "start": "electron .",
-    "build": "electron-builder --win portable"
+    "build": "electron-builder --win portable",
+    "dist": "electron-builder"
   },
 
-  "author": "Jake",
-  "license": "ISC",
+  "dependencies": {
+    "electron-updater": "^6.6.2"
+  },
 
   "devDependencies": {
     "electron": "^39.1.2",
@@ -21,19 +25,31 @@
   "build": {
     "appId": "com.prism.wrapper",
     "productName": "PRISM",
+
     "directories": {
       "output": "dist"
     },
+
     "files": [
       "**/*",
       "icon.ico"
     ],
+
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "J9B1",
+        "repo": "PRISM"
+      }
+    ],
+
     "win": {
       "target": "portable",
       "icon": "icon.ico"
     },
+
     "portable": {
-      "artifactName": "PRISM.exe"
+      "artifactName": "PRISM-${version}.exe"
     }
   }
 }
