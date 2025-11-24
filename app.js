@@ -24,6 +24,11 @@ ipcMain.on("setAlwaysOnTop", (event, state) => {
     if (mainWindow) mainWindow.setAlwaysOnTop(state);
 });
 
+ipcMain.on("closeApp", () => {
+    if (mainWindow) mainWindow.close();
+});
+
+
 // -------------------------------------------------------
 // Window Setup
 // -------------------------------------------------------
@@ -106,24 +111,16 @@ function createWindow() {
             setInterval(updateHUD, 1000);
             updateHUD();
 
-            if (!document.getElementById("prism-pin")) {
-                const pin = document.createElement("button");
-                pin.id = "prism-pin";
+            if (!document.getElementById("prism-close")) {
+    const closeBtn = document.createElement("button");
+    closeBtn.id = "prism-close";
+    closeBtn.innerHTML = "✕";
+    document.body.appendChild(closeBtn);
 
-                const pinned = localStorage.getItem("prismPinned") === "true";
-                pin.innerHTML = pinned ? "📍" : "📌";
-                document.body.appendChild(pin);
-
-                pin.addEventListener("click", () => {
-                    const newState = !(localStorage.getItem("prismPinned") === "true");
-                    localStorage.setItem("prismPinned", newState);
-
-                    pin.innerHTML = newState ? "📍" : "📌";
-                    window.electronAPI.setAlwaysOnTop(newState);
-                });
-
-                if (pinned) window.electronAPI.setAlwaysOnTop(true);
-            }
+    closeBtn.addEventListener("click", () => {
+        window.electronAPI.closeApp();
+    });
+}
         `);
 
         // -------------------------------------------------------
@@ -186,26 +183,28 @@ function createWindow() {
                 margin-top: 1px;
             }
 
-            #prism-pin {
-                position: fixed;
-                top: 0;
-                right: 0;
-                width: 40px;
-                height: 40px;
-                background: rgba(0,0,0,0.5);
-                color: white;
-                font-size: 20px;
-                border: none;
-                cursor: pointer;
-                border-top-right-radius: ${BORDER_RADIUS}px;
-                border-bottom-left-radius: ${BORDER_RADIUS}px;
-                z-index: 1000000000 !important;
-                backdrop-filter: blur(6px);
-            }
+            #prism-close {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 0, 0, 0.12); /* faint red */
+    color: white;
+    font-size: 20px;
+    border: none;
+    cursor: pointer;
+    border-top-right-radius: 15px;
+    border-bottom-left-radius: 15px;
+    z-index: 1000000000 !important;
+    backdrop-filter: blur(6px);
+    transition: background 0.18s ease, color 0.18s ease;
+}
 
-            #prism-pin:hover {
-                background: rgba(255,255,255,0.15);
-            }
+#prism-close:hover {
+    background: rgba(255, 0, 0, 0.36); /* clearer danger */
+    color: #fff;
+}
         `);
     });
 }

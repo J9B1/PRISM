@@ -6,5 +6,7 @@ contextBridge.exposeInMainWorld("electronAPI", {
     onUpdateStatus: (callback) =>
         ipcRenderer.on("update-status", (event, msg) => {
             callback(msg);
-        })
+        }),
+
+    closeApp: () => ipcRenderer.send("closeApp")
 });
